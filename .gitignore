@@ -1,4 +1,4 @@
 .idea
 
-go-web3-demo/.idea
-go-web3-demo/cmd/cmd
+go-eth-client/.idea
+go-eth-client/cmd/cmd
