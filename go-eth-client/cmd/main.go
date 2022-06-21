@@ -17,27 +17,10 @@ var (
 
 // call a contract
 func main() {
-	//
 	c, err := jsonrpc.NewClient("http://172.17.0.1:8545")
 	handleErr(err)
 
-	key, _ := importWallet()
-	fmt.Println(key.Address())
-	found, err := c.Eth().GetBalance(key.Address(), ethgo.Latest)
-	handleErr(err)
-	fmt.Println(found.String())
-
-	balance, err := c.Eth().GetBalance(testutil.DummyAddr, ethgo.Latest)
-	fmt.Printf("before balance is: %d\n", balance)
-
-	nonce, _ := c.Eth().GetNonce(key.Address(), ethgo.Latest)
-	fmt.Println(nonce)
-
-	hash, err := sendBatchTx(key, c, nonce, 20)
-	_, err = WaitForReceipt(c, hash)
-
-	balance, err = c.Eth().GetBalance(testutil.DummyAddr, ethgo.Latest)
-	fmt.Printf("after balance is: %d\n", balance)
+	QueryHeight(c)
 }
 
 func handleErr(err error) {
@@ -46,9 +29,32 @@ func handleErr(err error) {
 	}
 }
 
-func sendBatchTx(key ethgo.Key, c *jsonrpc.Client, nonce uint64, number uint64) (ethgo.Hash, error) {
+func sendBatchs(c *jsonrpc.Client, number uint64) {
+	key, _ := importWallet()
+	fmt.Println(key.Address())
+	found, err := c.Eth().GetBalance(key.Address(), ethgo.Latest)
+	handleErr(err)
+	fmt.Println(found.String())
+	balance, err := c.Eth().GetBalance(testutil.DummyAddr, ethgo.Latest)
+	handleErr(err)
+	fmt.Printf("before balance is: %d\n", balance)
+
+	for i := 0; i < 10000; i++ {
+		hash, err := sendBatchTx(key, c, 4)
+		handleErr(err)
+		time.Sleep(10 * time.Millisecond)
+		fmt.Println(hash)
+		//_, err = WaitForReceipt(c, hash)
+	}
+
+	balance, err = c.Eth().GetBalance(testutil.DummyAddr, ethgo.Latest)
+	fmt.Printf("after balance is: %d\n", balance)
+}
+
+func sendBatchTx(key ethgo.Key, c *jsonrpc.Client, number uint64) (ethgo.Hash, error) {
 	var i uint64
 	var hash ethgo.Hash
+	nonce, _ := c.Eth().GetNonce(key.Address(), ethgo.Pending)
 	for i = nonce; i < nonce+number; i++ {
 		txn := &ethgo.Transaction{
 			From:     key.Address(),

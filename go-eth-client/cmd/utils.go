@@ -17,7 +17,7 @@ func readFile(path string) string {
 }
 
 func QueryHeight(c *jsonrpc.Client) {
-	for i := 10; i < 100; i++ {
+	for i := 2560; i < 2600; i++ {
 		block, err := c.Eth().GetBlockByNumber(ethgo.BlockNumber(i), true)
 		if err != nil {
 			fmt.Println(err.Error())
@@ -26,8 +26,4 @@ func QueryHeight(c *jsonrpc.Client) {
 			i, block.Timestamp, len(block.Transactions))
 		fmt.Println(time.Unix(int64(block.Timestamp), 0))
 	}
-}
-
-func transferValue(c *jsonrpc.Client) {
-
 }
