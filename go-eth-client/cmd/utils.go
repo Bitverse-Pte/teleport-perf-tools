@@ -16,8 +16,8 @@ func readFile(path string) string {
 	return string(content)
 }
 
-func QueryHeight(c *jsonrpc.Client) {
-	for i := 2560; i < 2600; i++ {
+func QueryHeight(c *jsonrpc.Client, startHeight, endHeight int) {
+	for i := startHeight; i < endHeight; i++ {
 		block, err := c.Eth().GetBlockByNumber(ethgo.BlockNumber(i), true)
 		if err != nil {
 			fmt.Println(err.Error())

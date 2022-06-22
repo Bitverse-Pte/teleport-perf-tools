@@ -7,6 +7,8 @@ import (
 	"github.com/umbracle/ethgo/testutil"
 	"github.com/umbracle/ethgo/wallet"
 	"math/big"
+	"os"
+	"strconv"
 	"time"
 )
 
@@ -20,7 +22,14 @@ func main() {
 	c, err := jsonrpc.NewClient("http://172.17.0.1:8545")
 	handleErr(err)
 
-	QueryHeight(c)
+	if len(os.Args) != 3 {
+		panic("we wanted startHeigth and endHeight. demo: ./cmd 123 115")
+	}
+	startHeight, err := strconv.Atoi(os.Args[1])
+	handleErr(err)
+	endHeight, err := strconv.Atoi(os.Args[2])
+	handleErr(err)
+	QueryHeight(c, startHeight, endHeight)
 }
 
 func handleErr(err error) {
