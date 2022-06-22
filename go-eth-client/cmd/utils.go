@@ -5,7 +5,8 @@ import (
 	"github.com/umbracle/ethgo"
 	"github.com/umbracle/ethgo/jsonrpc"
 	"os"
-	"time"
+	"os/exec"
+	"strconv"
 )
 
 func readFile(path string) string {
@@ -24,6 +25,10 @@ func QueryHeight(c *jsonrpc.Client, startHeight, endHeight int) {
 		}
 		fmt.Printf("block height:%d, block time: %d, total transactions:%d\n",
 			i, block.Timestamp, len(block.Transactions))
-		fmt.Println(time.Unix(int64(block.Timestamp), 0))
+
+		result, err := exec.Command("/bin/bash", "-c",
+			"curl -s 172.17.0.1:26657/commit?height="+strconv.Itoa(i)+
+				" | jq \"{time: .result.signed_header.header.time}\"").CombinedOutput()
+		fmt.Println(string(result))
 	}
 }
